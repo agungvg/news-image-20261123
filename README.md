@@ -4,7 +4,23 @@
 ![repo](https://img.shields.io/badge/repo-agungvg%2Fnews--image--20261123-green)
 
 One image that sums up the world's news of **Monday 23 November 2026** — a
-newspaper front page, drawn entirely in code with Pillow.
+newspaper front page. The 13 story illustrations are real 3D dioramas built
+in code with three.js (procedural geometry, real lighting, shadows, bloom —
+see `~/workspace/makefun/news-image-20261123-3d/scene.js`, rendered in this
+session with headless Chromium + SwiftShader) and composited by `draw.py`;
+the layout, text, map and lists are drawn with Pillow. Flat Pillow drawings
+remain in `draw.py` as fallback if a 3D render file is missing.
+
+## How the images were made — 3D dioramas
+
+All 13 panels are three.js scenes built from primitives in code (no model
+files, no AI-generated images): Kyiv at night (slab blocks with lit windows,
+a collapsed block with rubble + fire glow + searchlight beams), COP31
+(a globe, a round table ringed by empty chairs, flags, a glass-front hall),
+Hormuz (a tanker with containers, smoke, mines, a low sun), plus a falling
+bar chart, a football pitch with trophy, a tennis court, a gold bounty coin,
+a capitol dome, a refinery flare, a burning factory, a UN tower and Shuri
+Castle. Renders live in `assets3d/` and are pasted by `draw.py`.
 
 ## What's on the page — 48 stories, 7 regions
 

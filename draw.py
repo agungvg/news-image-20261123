@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Paint the front page for Monday 23 November 2026.
 
-A newspaper front page, 1024x1024, drawn entirely in code with Pillow:
+A newspaper front page, 1024x1024. The 13 story illustrations are 3D
+dioramas built in code with three.js (~/workspace/makefun/news-image-
+20261123-3d/scene.js, rendered in this session) and composited here;
+the layout, text, map and lists are drawn with Pillow. Flat Pillow
+drawings remain as fallback if a 3D render file is missing.
 48 stories from 7 regions, every one happened or first reported on
 Monday 23 November 2026. Three hero panels (Kyiv region strikes,
 COP31 collapses, Hormuz tankers), ten small illustrated panels, a
@@ -83,7 +87,27 @@ def source_tag(draw, x, y, text):
 
 
 # ---------------------------------------------------------------- scenes
-def scene_kyiv(d, x, y, w, h):
+ASSETS3D = HERE / "assets3d"
+BASE = None  # set to the page image in main(); paste3d draws into it
+
+
+def paste3d(d, x, y, w, h, key):
+    """Paste a 3D render into a panel (cover-crop to w x h). False if missing."""
+    p = ASSETS3D / f"{key}.png"
+    if not p.exists() or BASE is None:
+        return False
+    im = Image.open(p).convert("RGB")
+    sw, sh = im.size
+    scale = max(w / sw, h / sh)
+    im = im.resize((round(sw * scale), round(sh * scale)), Image.LANCZOS)
+    ox = (im.width - w) // 2
+    oy = (im.height - h) // 2
+    im = im.crop((ox, oy, ox + w, oy + h))
+    BASE.paste(im, (x, y))
+    return True
+
+
+def scene_kyiv_flat(d, x, y, w, h):
     d.rectangle([x, y, x + w, y + h], fill=(28, 43, 74))
     d.ellipse([x + w - 52, y + 10, x + w - 22, y + 40], fill=(240, 230, 190))
     # skyline, one block collapsed
@@ -102,7 +126,7 @@ def scene_kyiv(d, x, y, w, h):
     d.ellipse([x + 120, y + h - 12, x + 150, y + h - 2], fill=(200, 120, 40))
 
 
-def scene_cop31(d, x, y, w, h):
+def scene_cop31_flat(d, x, y, w, h):
     d.rectangle([x, y, x + w, y + h], fill=(16, 92, 92))
     # cracked globe
     cx, cy, r = x + w // 2, y + 52, 34
@@ -118,7 +142,7 @@ def scene_cop31(d, x, y, w, h):
         d.rectangle([cx2 + 4, y + h - 22, cx2 + 22, y + h - 6], fill=(160, 130, 90))
 
 
-def scene_hormuz(d, x, y, w, h):
+def scene_hormuz_flat(d, x, y, w, h):
     d.rectangle([x, y, x + w, y + h], fill=(30, 95, 138))
     d.ellipse([x + 18, y + 12, x + 52, y + 40], fill=(255, 220, 120))
     # tanker
@@ -143,8 +167,25 @@ def scene_hormuz(d, x, y, w, h):
     d.arc([x + 150, y + 100, x + 240, y + 124], 180, 360, fill=(200, 230, 240), width=2)
 
 
+def scene_kyiv(d, x, y, w, h):
+    if not paste3d(d, x, y, w, h, "kyiv"):
+        scene_kyiv_flat(d, x, y, w, h)
+
+
+def scene_cop31(d, x, y, w, h):
+    if not paste3d(d, x, y, w, h, "cop31"):
+        scene_cop31_flat(d, x, y, w, h)
+
+
+def scene_hormuz(d, x, y, w, h):
+    if not paste3d(d, x, y, w, h, "hormuz"):
+        scene_hormuz_flat(d, x, y, w, h)
+
+
 def mini(d, x, y, w, h, kind):
-    """Small flat illustration for the second-tier panels."""
+    """Small 3D illustration for the second-tier panels (flat fallback)."""
+    if paste3d(d, x, y, w, h, kind):
+        return
     bg = {"chart": (240, 235, 220), "pitch": (46, 130, 70), "court": (52, 110, 180),
           "badge": (230, 210, 170), "dome": (210, 220, 235), "refinery": (60, 60, 70),
           "fire": (70, 40, 40), "un": (40, 90, 160), "castle": (200, 80, 60),
@@ -240,8 +281,7 @@ SMALL = [
      "CONFIRMED", "ATP"),
     (7, "ENGLAND", "FOOTBALL", "pitch",
      "Liverpool sink ten-man United",
-     "Liverpool win at Anfield in Mauricio Pochettino's first match "
-     "in charge of Manchester United.",
+     "Liverpool win at Anfield in Pochettino's debut.",
      "CONFIRMED", "BBC"),
     (8, "MEXICO", "CRIME", "badge",
      "'Chapo Isidro' captured in Sinaloa",
@@ -369,6 +409,8 @@ def draw_map(d, x, y, w, h):
 
 def paint():
     img = Image.new("RGB", (W, H), CREAM)
+    global BASE
+    BASE = img
     d = ImageDraw.Draw(img)
     mx = 22
     # ---- kicker
@@ -479,7 +521,7 @@ def paint():
     fy = H - 26
     d.line([mx, fy - 6, W - mx, fy - 6], fill=RULE, width=1)
     d.text((mx, fy), "Every story here happened, or was first reported, on Monday 23 November 2026. "
-                     "Claims are attributed. Sources named beside each story · original drawings.",
+                     "Claims are attributed. Sources named beside each story · original 3D scenes.",
            font=font(SANS, 9), fill=(70, 70, 70))
     img.save(OUT, "PNG", optimize=True)
     print(f"wrote {OUT} ({OUT.stat().st_size} bytes)")
