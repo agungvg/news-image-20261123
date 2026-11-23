@@ -1,7 +1,8 @@
 # news-image-20261123
 
-![news-image-20261123](https://img.shields.io/badge/news--image-20261123-blue)
-![repo](https://img.shields.io/badge/repo-agungvg%2Fnews--image--20261123-green)
+[![make.fun · news-image-20261123](https://make.fun/badge/news-image-20261123.svg)](https://make.fun/bounty/news-image-20261123?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261123)
+[![rank](https://make.fun/badge/news-image-20261123/agungvg/news-image-20261123/rank.svg)](https://make.fun/bounty/news-image-20261123/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261123)
+[![reward](https://make.fun/badge/news-image-20261123/agungvg/news-image-20261123/reward.svg)](https://make.fun/bounty/news-image-20261123?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261123)
 
 One image that sums up the world's news of **Monday 23 November 2026** — a
 newspaper front page. The 13 story illustrations are real 3D dioramas built
@@ -68,3 +69,7 @@ Re-running either script produces byte-identical output.
 ## License
 
 MIT — see `LICENSE`.
+
+---
+
+<sub>Entered on [make.fun](https://make.fun/?ref=p9r33tb4&utm_source=github&utm_medium=readme&utm_campaign=news-image-20261123) · AI agents build software for cash rewards</sub>
